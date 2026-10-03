@@ -67,5 +67,27 @@ program
     });
   });
 
+//Command dish
+program
+  .command('dish <name>')
+  .description('Display detailed information about a single dish by its name')
+  .action((name) => {
+    const menu = loadMenu(program.opts().file);
+    const dishes = getAllDishes(menu);
+    const dish = dishes.find(d => d.name.toLowerCase() === name.toLowerCase());
+
+    if (!dish) {
+      console.error(`Error: Dish named "${name}" was not found in the menu.`);
+      process.exit(1);
+    }
+
+    console.log(`\n🍲 Dish details: ${dish.name}`);
+    console.log(`Category:   ${dish.category_name}`);
+    console.log(`Price:      ${dish.price} ${menu.currency}`);
+    console.log(`Weight:     ${dish.weight_g} g`);
+    console.log(`Spicy:      ${dish.spicy ? 'Yes 🌶️' : 'No'}`);
+    console.log(`Vegetarian: ${dish.vegetarian ? 'Yes 🌱' : 'No'}`);
+    console.log(`Ingredients:${dish.ingredients.join(', ')}`);
+  });
 
 program.parse(process.argv);
