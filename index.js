@@ -117,4 +117,27 @@ program
     }
   });
 
+// Command category
+program
+  .command('category <categoryName>')
+  .description('Display all dishes belonging to a chosen category')
+  .action((categoryName) => {
+    const menu = loadMenu(program.opts().file);
+    const targetCategory = menu.categories.find(
+      c => c.category_name.toLowerCase() === categoryName.toLowerCase()
+    );
+
+    if (!targetCategory) {
+      console.error(`Error: Category "${categoryName}" was not found.`);
+      console.log('Available categories:', menu.categories.map(c => c.category_name).join(', '));
+      process.exit(1);
+    }
+
+    console.log(`--- Dishes in category "${targetCategory.category_name}" ---`);
+    targetCategory.dishes.forEach((dish, idx) => {
+      console.log(`${idx + 1}. ${dish.name} (${dish.price} ${menu.currency})`);
+    });
+  });
+
+
 program.parse(process.argv);
