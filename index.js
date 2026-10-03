@@ -90,4 +90,31 @@ program
     console.log(`Ingredients:${dish.ingredients.join(', ')}`);
   });
 
+//Command field
+program
+  .command('field <dishName> <fieldName>')
+  .description('Get the value of a specific field for a given dish')
+  .action((dishName, fieldName) => {
+    const menu = loadMenu(program.opts().file);
+    const dishes = getAllDishes(menu);
+    const dish = dishes.find(d => d.name.toLowerCase() === dishName.toLowerCase());
+
+    if (!dish) {
+      console.error(`Error: Dish named "${dishName}" was not found.`);
+      process.exit(1);
+    }
+
+    if (!(fieldName in dish)) {
+      console.error(`Error: Field "${fieldName}" does not exist in the dish structure.`);
+      process.exit(1);
+    }
+
+    const value = dish[fieldName];
+    if (Array.isArray(value)) {
+      console.log(`Value of "${fieldName}": [${value.join(', ')}]`);
+    } else {
+      console.log(`Value of "${fieldName}": ${value}`);
+    }
+  });
+
 program.parse(process.argv);
