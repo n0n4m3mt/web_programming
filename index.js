@@ -117,7 +117,7 @@ program
     }
   });
 
-// Command category
+//Command category
 program
   .command('category <categoryName>')
   .description('Display all dishes belonging to a chosen category')
@@ -139,5 +139,36 @@ program
     });
   });
 
+//Command filter
+program
+  .command('filter')
+  .description('Filter dishes by criteria (spicy, vegetarian, and max price)')
+  .option('--spicy', 'show only spicy dishes')
+  .option('--veg', 'show only vegetarian dishes')
+  .option('--max-price <number>', 'maximum acceptable price of the dish', parseFloat)
+  .action((options) => {
+    const menu = loadMenu(program.opts().file);
+    let dishes = getAllDishes(menu);
+
+    if (options.maxPrice && isNaN(options.maxPrice)) {
+      console.error('Error: Max price must be a valid numeric value.');
+      process.exit(1);
+    }
+
+    if (options.spicy) dishes = dishes.filter(d => d.spicy === true);
+    if (options.veg) dishes = dishes.filter(d => d.vegetarian === true);
+    if (options.maxPrice) dishes = dishes.filter(d => d.price <= options.maxPrice);
+
+    if (dishes.length === 0) {
+      console.log('No dishes matching the specified filters were found.');
+      return;
+    }
+
+    console.log('--- Filtered Dishes Results ---');
+    dishes.forEach(d => {
+      const flags = [d.spicy ? '🌶️' : '', d.vegetarian ? '🌱' : ''].filter(Boolean).join(' ');
+      console.log(`- [${d.category_name}] ${d.name} — ${d.price} ${menu.currency} ${flags}`);
+    });
+  });
 
 program.parse(process.argv);
