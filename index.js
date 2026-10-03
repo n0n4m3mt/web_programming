@@ -41,4 +41,31 @@ function getAllDishes(menu) {
   return allDishes;
 }
 
+// Command list
+program
+  .command('list')
+  .description('Display a concise list of all dishes in the menu')
+  .option('-l, --limit <number>', 'limit the number of displayed dishes', parseInt)
+  .action((options) => {
+    const menu = loadMenu(program.opts().file);
+    const dishes = getAllDishes(menu);
+    
+    if (dishes.length === 0) {
+      console.log('The menu is empty.');
+      return;
+    }
+
+    let limit = options.limit || dishes.length;
+    if (options.limit && isNaN(options.limit)) {
+      console.error('Error: Limit value must be a valid number.');
+      process.exit(1);
+    }
+
+    console.log(`--- Brief Dishes List (Total: ${dishes.length}, Displayed: ${Math.min(limit, dishes.length)}) ---`);
+    dishes.slice(0, limit).forEach((dish, index) => {
+      console.log(`${index + 1}. [${dish.category_name}] ${dish.name} — ${dish.price} ${menu.currency || 'USD'}`);
+    });
+  });
+
+
 program.parse(process.argv);
