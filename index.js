@@ -171,4 +171,27 @@ program
     });
   });
 
+//Command search-ingredient
+program
+  .command('search-ingredient <ingredient>')
+  .description('Search for all dishes that contain a specific ingredient')
+  .action((ingredient) => {
+    const menu = loadMenu(program.opts().file);
+    const dishes = getAllDishes(menu);
+    
+    const matchedDishes = dishes.filter(d => 
+      d.ingredients.some(ing => ing.toLowerCase().includes(ingredient.toLowerCase()))
+    );
+
+    if (matchedDishes.length === 0) {
+      console.log(`No dishes containing ingredient "${ingredient}" were found.`);
+      return;
+    }
+
+    console.log(`--- Dishes containing "${ingredient}" ---`);
+    matchedDishes.forEach(d => {
+      console.log(`- [${d.category_name}] ${d.name} (Ingredients: ${d.ingredients.join(', ')})`);
+    });
+  });
+
 program.parse(process.argv);
