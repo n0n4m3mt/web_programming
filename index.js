@@ -55,6 +55,11 @@ program
       return;
     }
 
+    if (options.limit !== undefined && isNaN(options.limit)) {
+      console.error('Error: Limit value must be a valid number.');
+      process.exit(1);
+    }
+
     let limit = options.limit || dishes.length;
     if (options.limit && isNaN(options.limit)) {
       console.error('Error: Limit value must be a valid number.');
